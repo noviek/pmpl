@@ -37,7 +37,7 @@ class HomePageTest(TestCase):
 		self.assertLess(Item.objects.count(), 5)
 		self.assertIn('Sibuk tapi santai', response.content.decode())
 
-	def test_home_page_if_list_greater_or_equal_than_five():
+	def test_home_page_if_list_greater_or_equal_than_five(self):
 		Item.objects.create(text='itemey 1')
 		Item.objects.create(text='itemey 2')
 		Item.objects.create(text='itemey 3')
