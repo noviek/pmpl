@@ -16,9 +16,40 @@ class HomePageTest(TestCase):
 	def test_home_page_returns_correct_html(self):
 		request = HttpRequest()
 		response = home_page(request)
-		expected_html = render_to_string('home.html')
+		expected_html = render_to_string('home.html', 
+			{'komentar': 'Yey, waktunya berlibur'}
+		)
 		self.assertEqual(response.content.decode(), expected_html)
 	
+	def test_home_page_if_list_is_empty(self):
+		request = HttpRequest()
+		response = home_page(request)
+		
+		self.assertEqual(Item.objects.count(), 0)
+		self.assertIn('Yey, waktunya berlibur', response.content.decode())
+
+	def test_home_page_if_list_less_than_five(self):
+		Item.objects.create(text='itemey 1')
+
+		request = HttpRequest()
+		response = home_page(request)
+
+		self.assertLess(Item.objects.count(), 5)
+		self.assertIn('Sibuk tapi santai', response.content.decode())
+
+	def test_home_page_if_list_greater_or_equal_than_five():
+		Item.objects.create(text='itemey 1')
+		Item.objects.create(text='itemey 2')
+		Item.objects.create(text='itemey 3')
+		Item.objects.create(text='itemey 4')
+		Item.objects.create(text='itemey 5')
+                
+		request = HttpRequest()
+		response = home_page(request)
+
+		self.assertGreaterEqual(Item.objects.count(), 5)
+		self.assertIn('Oh tidak', response.content.decode())
+
 	def test_home_page_displays_all_list_items(self):
 		Item.objects.create(text='itemey 1')
 		Item.objects.create(text='itemey 2')
