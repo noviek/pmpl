@@ -3,18 +3,16 @@
 		<title>Novie Kamalia - 1206239806</title>
 	</head>
 	<body>
-		<h1>Start a new To-Do list</h1>
-		<form method="POST">
+		<h1>Novie Kamalia (1206239806) To-Do list</h1>
+		<form method="POST" action="/">
 			<input name="item_text" id="id_new_item" placeholder="Enter a to-do item" />
 			{% csrf_token %}
-		</form> 
-		<!--
+		</form>
 		<h4> {{komentar}} </h4>
 		<table id="id_list_table">
 			{% for item in items %}
 				<tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
 			{% endfor %}
 		</table>
-		-->
 	</body>
 </html>

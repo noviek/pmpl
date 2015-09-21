@@ -24,7 +24,7 @@ class NewVisitorTest(LiveServerTestCase):
 
 		self.assertIn('Novie Kamalia', self.browser.title)
 		header_text = self.browser.find_element_by_tag_name('h1').text
-		self.assertIn('Novie Kamalia', header_text)
+		self.assertIn('To-Do list', header_text)
 
 		inputbox = self.browser.find_element_by_id('id_new_item')
 		self.assertEqual(
@@ -59,7 +59,7 @@ class NewVisitorTest(LiveServerTestCase):
 		self.assertNotIn('Buy peacock feathers', page_text)
 		self.assertNotIn('make a fly', page_text)
 
-		inputbox = self.browser.find_elemement_by_id('id_new_item')
+		inputbox = self.browser.find_element_by_id('id_new_item')
 		inputbox.send_keys('Buy milk')
 		inputbox.send_keys(Keys.ENTER)
 
