@@ -35,6 +35,8 @@ class NewVisitorTest(LiveServerTestCase):
 		inputbox.send_keys('Buy peacock feathers')
 
 		inputbox.send_keys(Keys.ENTER)
+		#novie_list_url = self.browser.current_url #
+		#self.assertRegex(novie_list_url, '/lists/.+') #
 		self.check_for_row_in_list_table('1: Buy peacock feathers')
 
 		inputbox = self.browser.find_element_by_id('id_new_item')
@@ -51,5 +53,7 @@ class NewVisitorTest(LiveServerTestCase):
 
 		self.fail('Finish the test!')
 
-if __name__ == '__main__':
-	unittest.main(warnings='ignore')
+
+
+#if __name__ == '__main__':
+#	unittest.main(warnings='ignore')
