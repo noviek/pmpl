@@ -3,7 +3,7 @@ from django.core.urlresolvers import resolve
 from django.test import TestCase
 from django.http import HttpRequest
 
-from lists.views import home_page
+from lists.views import home_page, view_list
 from lists.models import Item, List
 
 # Create your tests here.
@@ -16,40 +16,55 @@ class HomePageTest(TestCase):
 	def test_home_page_returns_correct_html(self):
 		request = HttpRequest()
 		response = home_page(request)
-		expected_html = render_to_string('home.html')
-		#expected_html = render_to_string('home.html', 
-		#	{'komentar': 'Yey, waktunya berlibur'}
-		#)
+		#expected_html = render_to_string('home.html')
+		expected_html = render_to_string('home.html', 
+			{'komentar': 'Yey, waktunya berlibur'}
+		)
 		self.assertEqual(response.content.decode(), expected_html)
 	
-	#def test_home_page_if_list_is_empty(self):
-	#	request = HttpRequest()
+	def test_home_page_if_list_is_empty(self):
+		request = HttpRequest()
+		response = home_page(request)
+	#	response = self.client.get('/lists/%d/' % (list_komentar.id,))
+	
+		self.assertEqual(Item.objects.count(), 0)
+		self.assertIn('Yey, waktunya berlibur', response.content.decode())
+
+	def test_home_page_if_list_less_than_five(self):
+		#Item.objects.create(text='itemey 1')
+		list_ = List.objects.create()
+		Item.objects.create(text='itemey 1', list=list_)
+
+		request = HttpRequest()
+		response = view_list(request, list_.id)
 	#	response = home_page(request)
-		
-	#	self.assertEqual(Item.objects.count(), 0)
-	#	self.assertIn('Yey, waktunya berlibur', response.content.decode())
+	#	response = self.client.get('/lists/%d/' % (list_komentar.id,))
 
-	#def test_home_page_if_list_less_than_five(self):
-	#	Item.objects.create(text='itemey 1')
+		self.assertLess(Item.objects.filter(list_id=list_.id).count(), 5)
+	#	self.assertContains(response, 'Sibuk tapi santai')
+		self.assertIn('Sibuk tapi santai', response.content.decode())
 
-	#	request = HttpRequest()
-	#	response = home_page(request)
+	def test_home_page_if_list_greater_or_equal_than_five(self):
+		list_ = List.objects.create()
+		Item.objects.create(text='itemey 1', list=list_)
+		Item.objects.create(text='itemey 2', list=list_)
+		Item.objects.create(text='itemey 3', list=list_)
+		Item.objects.create(text='itemey 4', list=list_)
+		Item.objects.create(text='itemey 5', list=list_)
 
-	#	self.assertLess(Item.objects.count(), 5)
-	#	self.assertIn('Sibuk tapi santai', response.content.decode())
-
-	#def test_home_page_if_list_greater_or_equal_than_five(self):
 	#	Item.objects.create(text='itemey 1')
 	#	Item.objects.create(text='itemey 2')
 	#	Item.objects.create(text='itemey 3')
 	#	Item.objects.create(text='itemey 4')
 	#	Item.objects.create(text='itemey 5')
-               
-	#	request = HttpRequest()
+              
+		request = HttpRequest()
+		response = view_list(request, list_.id)
 	#	response = home_page(request)
+	#	response = self.client.get('/lists/%d/' % (list_komentar.id,))
 
-	#	self.assertGreaterEqual(Item.objects.count(), 5)
-	#	self.assertIn('Oh tidak', response.content.decode())
+		self.assertGreaterEqual(Item.objects.filter(list_id=list_.id).count(), 5)
+		self.assertIn('Oh tidak', response.content.decode())
 
 	#def test_home_page_displays_all_list_items(self):
 	#	Item.objects.create(text='itemey 1')
