@@ -11,9 +11,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-	migrations.AlterField(
+        migrations.AlterField(
             model_name='item',
             name='text',
-            field=models.TextField(default='', unique=True),
+            field=models.TextField(unique=True, default=''),
         ),
     ]
