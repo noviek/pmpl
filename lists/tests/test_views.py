@@ -1,10 +1,12 @@
-from django.template.loader import render_to_string
 from django.core.urlresolvers import resolve
-from django.test import TestCase
 from django.http import HttpRequest
+from django.template.loader import render_to_string
+from django.test import TestCase
+from django.utils.html import escape
 
-from lists.views import home_page, view_list
 from lists.models import Item, List
+from lists.views import home_page
+from lists.views import view_list
 
 class HomePageTest(TestCase):
 
@@ -59,7 +61,7 @@ class ListViewTest(TestCase):
 		response = self.client.get('/lists/%d/' % (list_.id,))
 		self.assertTemplateUsed(response, 'list.html')
 
-	def test_display_only_items_for_that_list(self):
+	def test_display_all_items(self):
 		correct_list = List.objects.create()
 		Item.objects.create(text='itemey 1', list=correct_list)
 		Item.objects.create(text='itemey 2', list=correct_list)
@@ -82,13 +84,7 @@ class ListViewTest(TestCase):
 
 class NewListTest(TestCase):
 
-	def test_saving_a_POST_request(self):
-		#request = HttpRequest()
-		#request.method = 'POST'
-		#request.POST['item_text'] = 'A new list item'
-
-		#response = home_page(request)
-
+	def test_save_a_POST_request(self):
 		self.client.post(
 			'/lists/new',
 			data={'item_text': 'A new list item'}
@@ -99,22 +95,26 @@ class NewListTest(TestCase):
 		self.assertEqual(new_item.text, 'A new list item')
 
 	def test_redirects_after_POST(self):
-		#request = HttpRequest()
-		#request.method = 'POST'
-		#request.POST['item_text'] = 'A new list item'
-
-		#response = home_page(request)
-
 		response = self.client.post(
 			'/lists/new',
 			data={'item_text': 'A new list item'}
 		)
 
-		#self.assertEqual(response.status_code, 302)
-		#self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
 		new_list = List.objects.first()
 		self.assertRedirects(response, '/lists/%d/' % (new_list.id,))
 
+	def test_validation_errors_are_sent_back_to_home_page_template(self):
+		response = self.client.post('/lists/new', data={'item_text': ''})
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'home.html')
+		expected_error = escape("You can't have an empty list item")
+		self.assertContains(response, expected_error)
+
+	def test_invalid_list_items_arent_saved(self):
+		self.client.post('/lists/new', data={'item_text': ''})
+		self.assertEqual(List.objects.count(), 0)
+		self.assertEqual(Item.objects.count(), 0)
+	
 class NewItemTest(TestCase):
 
 	def test_can_save_a_POST_request_to_an_existing_list(self):
