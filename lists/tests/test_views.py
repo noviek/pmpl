@@ -134,7 +134,6 @@ class NewListTest(TestCase):
 			'/lists/new',
 			data={'item_text': 'A new list item'}
 		)
-
 		new_list = List.objects.first()
 		self.assertRedirects(response, '/lists/%d/' % (new_list.id,))
 
@@ -142,6 +141,7 @@ class NewListTest(TestCase):
 		response = self.client.post('/lists/new', data={'item_text': ''})
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home.html')
+
 		expected_error = escape("You can't have an empty list item")
 		self.assertContains(response, expected_error)
 
@@ -157,7 +157,7 @@ class NewItemTest(TestCase):
 		correct_list = List.objects.create()
 
 		self.client.post(
-			'/lists/%d/add_item' % (correct_list.id,),
+			'/lists/%d/' % (correct_list.id,),
 			data={'item_text': 'A new item for an existing list'}
 		)
 
@@ -171,7 +171,7 @@ class NewItemTest(TestCase):
 		correct_list = List.objects.create()
 
 		response = self.client.post(
-			'/lists/%d/add_item' % (correct_list.id,),
+			'/lists/%d/' % (correct_list.id,),
 			data={'item_text': 'A new item for an existing list'}
 		)
 
