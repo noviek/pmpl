@@ -15,7 +15,6 @@ def find_dupes(apps, schema_editor):
                 item.save()
             texts.add(item.text)
 
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -23,5 +22,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(find_dupes),
+	migrations.RunPython(find_dupes),
     ]
